@@ -75,6 +75,7 @@ button, input, select { font: inherit; }
 
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 950; letter-spacing: 0.01em; }
 .brandLogo { width: 124px; height: auto; filter: drop-shadow(0 0 18px rgba(127, 180, 255, 0.28)); }
+.siteHeader nav { display: inline-flex; align-items: center; gap: 16px; }
 .siteHeader nav a { color: var(--muted); font-size: 14px; font-weight: 800; }
 .siteHeader nav a:hover { color: var(--text); }
 
@@ -322,23 +323,184 @@ button, input, select { font: inherit; }
 .copyField .copyButton { padding: 9px 12px; }
 .emptyState, .errorPanel { padding: 30px; color: #d3e3f1; }
 
+.joinHero { align-items: stretch; }
+.joinHero h1 { max-width: 980px; }
+.joinFlowCard {
+  display: grid;
+  gap: 12px;
+  align-content: center;
+  min-height: 380px;
+  border: 1px solid var(--line-strong);
+  border-radius: 34px;
+  padding: 24px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(150deg, rgba(14, 44, 69, 0.82), rgba(3, 8, 15, 0.96));
+  background-size: 34px 34px, 34px 34px, auto;
+  box-shadow: var(--shadow), inset 0 1px rgba(255,255,255,0.08);
+}
+.flowStep {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid rgba(141, 190, 255, 0.2);
+  border-radius: 18px;
+  background: rgba(0,0,0,0.24);
+  padding: 13px;
+}
+.flowStep span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffbd4a, var(--orange));
+  color: #120904;
+  font-weight: 950;
+}
+.flowStep strong { color: #edf7ff; }
+.joinIntro { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+.joinStatement { padding: 26px; }
+.joinStatement h2, .checklistBand h2, .checkerPanel h2, .eligibilityResult h2, .joinCard h2 { margin: 0; letter-spacing: -0.035em; }
+.joinStatement p:last-child { color: #c5d6e5; line-height: 1.55; }
+.checklistBand {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.7fr) 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 18px;
+  padding: 26px;
+  border: 1px solid rgba(141, 190, 255, 0.18);
+  border-radius: var(--radius);
+  background: rgba(4, 12, 21, 0.52);
+}
+.checklistBand h2 { font-size: clamp(26px, 3vw, 42px); line-height: 1; }
+.joinFlow { display: grid; gap: 18px; padding-bottom: 76px; }
+.joinRequirements { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 18px; }
+.joinCard, .checkerPanel, .eligibilityResult {
+  padding: 24px;
+}
+.joinCard {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(155deg, rgba(8, 24, 40, 0.72), rgba(4, 11, 20, 0.88));
+  box-shadow: inset 0 1px rgba(255,255,255,0.06);
+}
+.checkList {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.checkList li, .capabilityGrid span {
+  position: relative;
+  border: 1px solid rgba(141, 190, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.035);
+  color: #d7eaff;
+  padding: 12px 12px 12px 36px;
+  font-weight: 850;
+}
+.checkList li::before, .capabilityGrid span::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: var(--cyan);
+  box-shadow: 0 0 18px currentColor;
+}
+.capabilityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.capabilityGrid .checkPass {
+  border-color: rgba(103, 232, 165, 0.3);
+  color: #c9ffdf;
+  background: rgba(103, 232, 165, 0.08);
+}
+.capabilityGrid .checkPass::before { background: var(--green); }
+.capabilityGrid .checkPending {
+  border-color: rgba(255, 209, 102, 0.24);
+  color: #ffe7ac;
+  background: rgba(255, 209, 102, 0.06);
+}
+.capabilityGrid .checkPending::before { background: var(--yellow); }
+.checkerPanel {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) 1.2fr;
+  gap: 20px;
+  align-items: end;
+}
+.checkerForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+.checkerForm label { display: grid; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 850; }
+.checkerForm input {
+  width: 100%;
+  border: 1px solid rgba(141, 190, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(0,0,0,0.28);
+  color: var(--text);
+  padding: 13px 14px;
+  outline: none;
+}
+.checkerForm input:focus { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(140, 231, 255, 0.1); }
+.eligibilityResult { border-color: rgba(255, 138, 0, 0.28); }
+.resultReady { border-color: rgba(103, 232, 165, 0.36); }
+.resultLimited { border-color: rgba(255, 209, 102, 0.34); }
+.resultBlocked { border-color: rgba(255, 107, 107, 0.36); }
+.joinDetails {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+.joinDetails div {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 12px;
+  border: 1px solid rgba(141, 190, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(0,0,0,0.22);
+  padding: 13px;
+}
+.joinDetails span { color: var(--muted); font-weight: 850; }
+.joinDetails code, .eligibilityResult code { color: #d6efff; overflow-wrap: anywhere; }
+.joinDetails strong { color: var(--text); overflow-wrap: anywhere; }
+.joinDetails .copyButton { justify-self: start; }
+.joinMetrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+
 @media (max-width: 940px) {
   .hero { grid-template-columns: 1fr; }
   .heroMapCard { min-height: 300px; }
-  .summaryGrid, .mapGrid, .detailGrid { grid-template-columns: 1fr; }
+  .summaryGrid, .mapGrid, .detailGrid, .joinIntro, .joinRequirements, .checklistBand, .checkerPanel, .joinMetrics { grid-template-columns: 1fr; }
   .mapPreview { position: relative; top: auto; min-height: 340px; }
+  .joinFlowCard { min-height: auto; }
 }
 
 @media (max-width: 760px) {
   .siteHeader { padding: 12px 16px; }
   .brand span { display: none; }
+  .siteHeader nav { gap: 10px; }
+  .siteHeader nav a { font-size: 13px; }
   .shell { width: min(100% - 24px, 1180px); }
   .hero { padding-top: 42px; }
-  .heroActions, .controls { grid-template-columns: 1fr; flex-direction: column; align-items: stretch; }
+  .heroActions, .controls, .checkerForm, .capabilityGrid { grid-template-columns: 1fr; flex-direction: column; align-items: stretch; }
   .controls { display: grid; }
   .nodeCardTop, .sectionHeader, .detailHero { flex-direction: column; }
   .detailStatusStack { align-items: flex-start; }
-  .copyField { grid-template-columns: 1fr; }
+  .copyField, .joinDetails div { grid-template-columns: 1fr; }
   .copyButton, .primaryAction { width: 100%; }
+  .joinDetails .copyButton { justify-self: stretch; }
   .summaryCard.source span { font-size: 14px; }
 }

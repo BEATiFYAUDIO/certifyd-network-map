@@ -42,6 +42,7 @@ The broader Certifyd ecosystem includes:
 ## Routes
 
 - `/` - public network map-ready directory
+- `/join` - operator-facing eligibility preview and join path
 - `/node/[nodeId]` - provider detail and copy panel
 
 ## Environment
@@ -82,7 +83,27 @@ Non-eligible nodes are hidden by default. For local debugging, set:
 NEXT_PUBLIC_SHOW_INELIGIBLE_NODES=true
 ```
 
-## Current V1 Join Path
+## Apply to Join the Network
+
+`/join` is the first operator-facing admission flow for `network.certifyd.me`.
+
+The flow is:
+
+1. Run Node
+2. Meet Requirements
+3. Submit Node
+4. Eligibility Check
+5. Become Discoverable
+
+V1 does not create accounts, store submissions, or write to a database. It gives operators a public eligibility preview by asking for a provider canonical URL, fetching:
+
+```text
+{providerUrl}/api/network/nodes
+```
+
+The client-side checker reads the returned nodes, matches the submitted provider URL against `connect.providerCanonicalUrl` when possible, then applies the same map eligibility and provisionability helpers used by the public directory.
+
+### Current V1 Join Path
 
 1. Run a ContentBox sovereign node.
 2. Configure a public canonical URL.
@@ -116,6 +137,7 @@ npm run start
 ```bash
 npm run build
 npm run lint
+npm audit
 ```
 
 ## Security Model
