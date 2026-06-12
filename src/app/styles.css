@@ -74,7 +74,7 @@ button, input, select { font: inherit; }
 }
 
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 950; letter-spacing: 0.01em; }
-.brandLogo { width: 124px; height: auto; filter: drop-shadow(0 0 18px rgba(127, 180, 255, 0.28)); }
+.brandLogo { width: 36px; height: 40px; object-fit: contain; filter: drop-shadow(0 0 18px rgba(127, 180, 255, 0.28)); }
 .siteHeader nav { display: inline-flex; align-items: center; gap: 16px; }
 .siteHeader nav a { color: var(--muted); font-size: 14px; font-weight: 800; }
 .siteHeader nav a:hover { color: var(--text); }

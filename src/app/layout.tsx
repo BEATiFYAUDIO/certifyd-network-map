@@ -15,8 +15,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <header className="siteHeader">
           <Link className="brand" href="/" aria-label="Certifyd Network Map home">
-            <Image className="brandLogo" src="/certifyd-logo.svg" alt="Certifyd" width={124} height={40} priority />
-            <span>Network</span>
+            <Image className="brandLogo" src="/favicon.svg" alt="Certifyd" width={36} height={40} priority />
+            <span>Certifyd Network</span>
           </Link>
           <nav aria-label="Primary navigation">
             <Link href="/">Map</Link>
