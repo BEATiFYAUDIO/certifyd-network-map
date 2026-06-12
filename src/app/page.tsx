@@ -5,10 +5,15 @@ function countReady(nodes: Awaited<ReturnType<typeof getNetworkNodes>>) {
   return nodes.filter((node) => node.overallStatus === "ready").length;
 }
 
-export default async function Home({ searchParams }: { searchParams?: { q?: string; status?: string } }) {
+export default async function Home({
+  searchParams
+}: {
+  searchParams?: Promise<{ q?: string; status?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
   const nodes = await getNetworkNodes();
-  const q = String(searchParams?.q || "").trim().toLowerCase();
-  const status = String(searchParams?.status || "").trim().toLowerCase();
+  const q = String(resolvedSearchParams?.q || "").trim().toLowerCase();
+  const status = String(resolvedSearchParams?.status || "").trim().toLowerCase();
   const filtered = nodes.filter((node) => {
     const haystack = [node.displayName, node.operator, node.nodeId, node.connect.providerCanonicalUrl, ...node.roles]
       .filter(Boolean)
@@ -40,11 +45,11 @@ export default async function Home({ searchParams }: { searchParams?: { q?: stri
         <form className="controls" action="/">
           <label>
             <span>Search nodes</span>
-            <input name="q" placeholder="Provider, operator, role, node ID" defaultValue={searchParams?.q || ""} />
+            <input name="q" placeholder="Provider, operator, role, node ID" defaultValue={resolvedSearchParams?.q || ""} />
           </label>
           <label>
             <span>Status</span>
-            <select name="status" defaultValue={searchParams?.status || ""}>
+            <select name="status" defaultValue={resolvedSearchParams?.status || ""}>
               <option value="">All statuses</option>
               <option value="ready">Ready</option>
               <option value="limited">Limited</option>

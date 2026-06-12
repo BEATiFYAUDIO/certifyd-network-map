@@ -14,8 +14,9 @@ function HistoryValue({ label, value, suffix = "" }: { label: string; value?: nu
   );
 }
 
-export default async function NodeDetail({ params }: { params: { nodeId: string } }) {
-  const nodeId = decodeURIComponent(params.nodeId);
+export default async function NodeDetail({ params }: { params: Promise<{ nodeId: string }> }) {
+  const resolvedParams = await params;
+  const nodeId = decodeURIComponent(resolvedParams.nodeId);
   const node = await getNetworkNode(nodeId).catch(() => null);
   if (!node) notFound();
   const reasonCodes = Array.from(

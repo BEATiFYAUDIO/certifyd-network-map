@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import "./styles.css";
 
 export const metadata: Metadata = {
@@ -13,12 +14,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <header className="siteHeader">
-          <a className="brand" href="/" aria-label="Certifyd Network Map home">
+          <Link className="brand" href="/" aria-label="Certifyd Network Map home">
             <Image src="/favicon.svg" alt="" width={38} height={38} priority />
             <span>Certifyd Network</span>
-          </a>
+          </Link>
           <nav aria-label="Primary navigation">
-            <a href="/">Map</a>
+            <Link href="/">Map</Link>
           </nav>
         </header>
         {children}

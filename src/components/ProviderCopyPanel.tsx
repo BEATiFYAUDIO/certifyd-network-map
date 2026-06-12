@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { NetworkMapNode } from "@/lib/network";
 
 function CopyButton({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
   const disabled = !value;
   return (
     <button
@@ -13,12 +13,16 @@ function CopyButton({ label, value }: { label: string; value: string }) {
       disabled={disabled}
       onClick={async () => {
         if (!value) return;
-        await navigator.clipboard.writeText(value);
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1500);
+        try {
+          await navigator.clipboard.writeText(value);
+          setState("copied");
+        } catch {
+          setState("failed");
+        }
+        window.setTimeout(() => setState("idle"), 1500);
       }}
     >
-      {copied ? "Copied" : label}
+      {state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : label}
     </button>
   );
 }
@@ -56,9 +60,9 @@ export function ProviderCopyPanel({ node, settingsUrl }: { node: NetworkMapNode;
       </p>
       <div className="copyGrid">
         <Field label="Provider URL" value={node.connect.providerCanonicalUrl || ""} />
-        <Field label="Node ID" value={node.connect.providerNodeId || ""} />
-        <Field label="Public Key" value={node.connect.providerPublicKey || ""} />
-        <Field label="Profile ID" value={node.connect.providerProfileId || ""} />
+        <Field label="Provider Node ID" value={node.connect.providerNodeId || ""} />
+        <Field label="Provider Public Key" value={node.connect.providerPublicKey || ""} />
+        <Field label="Provider Profile ID" value={node.connect.providerProfileId || ""} />
       </div>
       {settingsUrl ? (
         <a className="primaryAction" href={settingsUrl} target="_blank" rel="noreferrer">
