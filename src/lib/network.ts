@@ -77,8 +77,91 @@ type NodeResponse = {
 const DEFAULT_REGISTRY_URL = "https://certifyd.beatifygroup.com";
 const DEBUG_INELIGIBLE_NODES = "true";
 
+const STATIC_NETWORK_NODES: NetworkMapNode[] = [
+  {
+    nodeId: "node:768fef95328f2621ed0b01caf69d39ac4a0a915a1de6ec4506ac5a075928d76e",
+    displayName: "Certifyd Creator Profile",
+    operator: "Certifyd",
+    roles: ["creator", "identity", "content", "commerce", "settlement", "proof"],
+    overallStatus: "limited",
+    services: {
+      identity: { status: "ready" },
+      content: { status: "ready" },
+      commerce: {
+        status: "limited",
+        message: "Provider role is advertised but commerce readiness is degraded.",
+        reasonCodes: ["LOW_INBOUND_LIQUIDITY"],
+        score: 84
+      },
+      settlement: {
+        status: "limited",
+        message: "Settlement readiness is degraded.",
+        reasonCodes: ["LOW_INBOUND_LIQUIDITY"],
+        score: 84
+      },
+      proofs: { status: "ready" }
+    },
+    readiness: {
+      provisioned: {
+        status: "limited",
+        message: "Node is not fully ready to provision creators.",
+        reasonCodes: ["COMMERCE_LIMITED", "SETTLEMENT_LIMITED"],
+        score: 50
+      },
+      durable: {
+        status: "ready",
+        reasonCodes: ["COMMERCE_LIMITED"],
+        score: 85
+      },
+      reachable: { status: "ready" }
+    },
+    trust: {
+      operatorVerified: true,
+      proofCapable: true,
+      proofCount: 3
+    },
+    history: {
+      nodeAgeDays: null,
+      reliability30d: null,
+      reliability90d: null,
+      successfulPayments30d: null
+    },
+    connect: {
+      providerNodeId: "node:768fef95328f2621ed0b01caf69d39ac4a0a915a1de6ec4506ac5a075928d76e",
+      providerPublicKey: "ed25519:MCowBQYDK2VwAyEAP-5l7T3Ej7fZJDfxus5KEQJSMc-aGjXr1BSMpsDd9yY",
+      providerProfileId: "cmolwkufl0006vjwo9jkwvvq6",
+      providerCanonicalUrl: "https://public.certifyd.me",
+      capabilities: {
+        identity: true,
+        content: true,
+        commerce: true,
+        settlement: true,
+        proofs: true
+      }
+    },
+    technical: {
+      version: "network-map-v1",
+      network: "certifyd"
+    }
+  }
+];
+
 export function registryBaseUrl(): string {
   return String(process.env.NEXT_PUBLIC_NETWORK_REGISTRY_URL || DEFAULT_REGISTRY_URL).replace(/\/$/, "");
+}
+
+function mergeNetworkNodes(nodes: NetworkMapNode[]): NetworkMapNode[] {
+  const seen = new Set<string>();
+  const merged: NetworkMapNode[] = [];
+
+  for (const node of [...nodes, ...STATIC_NETWORK_NODES]) {
+    const key = String(node.nodeId || node.connect?.providerCanonicalUrl || "").trim().toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    merged.push(node);
+  }
+
+  return merged;
 }
 
 async function registryFetch<T>(path: string): Promise<T> {
@@ -94,10 +177,13 @@ async function registryFetch<T>(path: string): Promise<T> {
 
 export async function getNetworkNodes(): Promise<NetworkMapNode[]> {
   const data = await registryFetch<NodesResponse>("/api/network/nodes");
-  return Array.isArray(data.items) ? data.items : [];
+  return mergeNetworkNodes(Array.isArray(data.items) ? data.items : []);
 }
 
 export async function getNetworkNode(nodeId: string): Promise<NetworkMapNode> {
+  const staticNode = STATIC_NETWORK_NODES.find((node) => node.nodeId === nodeId);
+  if (staticNode) return staticNode;
+
   const data = await registryFetch<NodeResponse>(`/api/network/nodes/${encodeURIComponent(nodeId)}`);
   return data.node;
 }
