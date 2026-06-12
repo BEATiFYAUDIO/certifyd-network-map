@@ -1,10 +1,12 @@
 import { isMapEligibleNode, type NetworkMapNode, type NetworkMapStatus } from "@/lib/network";
 
-export type MappableNode = {
-  node: NetworkMapNode;
+export type MappableArea = {
+  id: string;
   longitude: number;
   latitude: number;
   label: string;
+  nodes: NetworkMapNode[];
+  status: NetworkMapStatus;
   clusterCount: number;
 };
 
@@ -12,16 +14,17 @@ type KnownLocation = {
   longitude: number;
   latitude: number;
   zoom: number;
+  label?: string;
 };
 
 const KNOWN_LOCATIONS: Record<string, KnownLocation> = {
-  "innisfil, ontario, canada": { longitude: -79.5464, latitude: 44.3001, zoom: 9 },
-  "innisfil, ontario": { longitude: -79.5464, latitude: 44.3001, zoom: 9 },
-  "simcoe county, ontario, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 7 },
-  "simcoe county, ontario": { longitude: -79.8661, latitude: 44.5834, zoom: 7 },
-  "ontario, canada": { longitude: -85.3232, latitude: 50.0007, zoom: 4 },
-  ontario: { longitude: -85.3232, latitude: 50.0007, zoom: 4 },
-  canada: { longitude: -106.3468, latitude: 56.1304, zoom: 3 }
+  "innisfil, ontario, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Innisfil area, Ontario" },
+  "innisfil, ontario": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Innisfil area, Ontario" },
+  "simcoe county, ontario, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
+  "simcoe county, ontario": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
+  "ontario, canada": { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
+  ontario: { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
+  canada: { longitude: -106.3468, latitude: 56.1304, zoom: 3, label: "Canada" }
 };
 
 export const STATUS_COLORS: Record<NetworkMapStatus, string> = {
@@ -40,21 +43,9 @@ function normalizeLocationKey(value: string): string {
     .replace(/\s*,\s*/g, ", ");
 }
 
-function isSafeCoordinate(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
 export function resolveNodeLocation(node: NetworkMapNode): KnownLocation | null {
   const location = node.location;
   if (!location) return null;
-
-  if (isSafeCoordinate(location.lat) && isSafeCoordinate(location.lng)) {
-    return {
-      latitude: location.lat,
-      longitude: location.lng,
-      zoom: 8
-    };
-  }
 
   const candidates = [
     location.displayLocation,
@@ -73,49 +64,72 @@ export function resolveNodeLocation(node: NetworkMapNode): KnownLocation | null 
   return null;
 }
 
-export function mappableNodes(nodes: NetworkMapNode[]): MappableNode[] {
-  const samePlaceCount = new Map<string, number>();
-  const samePlaceTotal = new Map<string, number>();
-  const resolvedNodes = nodes
-    .filter(isMapEligibleNode)
-    .map((node) => {
-      const resolved = resolveNodeLocation(node);
-      if (!resolved) return null;
-      const placeKey = `${resolved.longitude.toFixed(4)},${resolved.latitude.toFixed(4)}`;
-      samePlaceTotal.set(placeKey, (samePlaceTotal.get(placeKey) || 0) + 1);
-      return { node, resolved, placeKey };
-    })
-    .filter((item): item is { node: NetworkMapNode; resolved: KnownLocation; placeKey: string } => Boolean(item));
-
-  return resolvedNodes
-    .map(({ node, resolved, placeKey }) => {
-      const index = samePlaceCount.get(placeKey) || 0;
-      samePlaceCount.set(placeKey, index + 1);
-      const clusterCount = samePlaceTotal.get(placeKey) || 1;
-      const offsetRadius = index === 0 ? 0 : Math.min(0.12, 0.036 + clusterCount * 0.006);
-      const angle = index * 1.61803398875 * Math.PI;
-      return {
-        node,
-        longitude: resolved.longitude + Math.cos(angle) * offsetRadius,
-        latitude: resolved.latitude + Math.sin(angle) * offsetRadius,
-        label: node.location?.displayLocation || [node.location?.city, node.location?.region, node.location?.country].filter(Boolean).join(", "),
-        clusterCount
-      };
-    });
+function publicLocationLabel(node: NetworkMapNode, resolved: KnownLocation): string {
+  const location = node.location;
+  const declaredLabel = location?.displayLocation || [location?.city, location?.region, location?.country].filter(Boolean).join(", ");
+  const normalized = normalizeLocationKey(declaredLabel);
+  if (normalized.includes("innisfil")) return "Innisfil area, Ontario";
+  return resolved.label || declaredLabel || "Approximate public area";
 }
 
-export function initialViewForNodes(nodes: MappableNode[]) {
-  if (!nodes.length) {
+const STATUS_SEVERITY: Record<NetworkMapStatus, number> = {
+  ready: 0,
+  unknown: 1,
+  limited: 2,
+  disabled: 3,
+  offline: 4
+};
+
+function areaStatus(nodes: NetworkMapNode[]): NetworkMapStatus {
+  return nodes.reduce<NetworkMapStatus>((current, node) => {
+    return STATUS_SEVERITY[node.overallStatus] > STATUS_SEVERITY[current] ? node.overallStatus : current;
+  }, "ready");
+}
+
+export function mappableAreas(nodes: NetworkMapNode[]): MappableArea[] {
+  const areas = new Map<string, MappableArea>();
+
+  for (const node of nodes.filter(isMapEligibleNode)) {
+    const resolved = resolveNodeLocation(node);
+    if (!resolved) continue;
+
+    const label = publicLocationLabel(node, resolved);
+    const id = normalizeLocationKey(label);
+    const existing = areas.get(id);
+
+    if (existing) {
+      existing.nodes.push(node);
+      existing.clusterCount = existing.nodes.length;
+      existing.status = areaStatus(existing.nodes);
+      continue;
+    }
+
+    areas.set(id, {
+      id,
+      longitude: resolved.longitude,
+      latitude: resolved.latitude,
+      label,
+      nodes: [node],
+      status: node.overallStatus,
+      clusterCount: 1
+    });
+  }
+
+  return Array.from(areas.values());
+}
+
+export function initialViewForAreas(areas: MappableArea[]) {
+  if (!areas.length) {
     return { longitude: -96.8, latitude: 55.2, zoom: 2.7 };
   }
-  if (nodes.length === 1) {
+  if (areas.length === 1) {
     return {
-      longitude: nodes[0].longitude - 7,
-      latitude: nodes[0].latitude + 2,
-      zoom: 4.1
+      longitude: areas[0].longitude - 5.5,
+      latitude: areas[0].latitude + 1.6,
+      zoom: 4
     };
   }
-  const longitude = nodes.reduce((sum, item) => sum + item.longitude, 0) / nodes.length;
-  const latitude = nodes.reduce((sum, item) => sum + item.latitude, 0) / nodes.length;
-  return { longitude, latitude, zoom: nodes.length < 6 ? 4.2 : 3.3 };
+  const longitude = areas.reduce((sum, item) => sum + item.longitude, 0) / areas.length;
+  const latitude = areas.reduce((sum, item) => sum + item.latitude, 0) / areas.length;
+  return { longitude, latitude, zoom: areas.length < 6 ? 4 : 3.3 };
 }

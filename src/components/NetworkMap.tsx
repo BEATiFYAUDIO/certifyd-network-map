@@ -4,18 +4,19 @@ import Link from "next/link";
 import Map, { Marker, NavigationControl, Popup } from "react-map-gl/maplibre";
 import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
-import { initialViewForNodes, mappableNodes, STATUS_COLORS, type MappableNode } from "@/lib/locationResolver";
+import { initialViewForAreas, mappableAreas, STATUS_COLORS, type MappableArea } from "@/lib/locationResolver";
 import { isProvisionableNode, statusLabel, type NetworkMapNode } from "@/lib/network";
 
 const DARK_BASEMAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
 export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
-  const markers = useMemo(() => mappableNodes(nodes), [nodes]);
-  const initialViewState = useMemo(() => initialViewForNodes(markers), [markers]);
-  const [selected, setSelected] = useState<MappableNode | null>(null);
-  const mappedProviders = markers.length;
-  const commerceReady = markers.filter((marker) => marker.node.services.commerce.status === "ready" || marker.node.services.commerce.status === "limited").length;
-  const verifiedOperators = markers.filter((marker) => marker.node.trust.operatorVerified || marker.node.trust.proofCapable).length;
+  const areas = useMemo(() => mappableAreas(nodes), [nodes]);
+  const initialViewState = useMemo(() => initialViewForAreas(areas), [areas]);
+  const [selected, setSelected] = useState<MappableArea | null>(null);
+  const mappedProviders = areas.reduce((sum, area) => sum + area.nodes.length, 0);
+  const mappedNodes = areas.flatMap((area) => area.nodes);
+  const commerceReady = mappedNodes.filter((node) => node.services.commerce.status === "ready" || node.services.commerce.status === "limited").length;
+  const verifiedOperators = mappedNodes.filter((node) => node.trust.operatorVerified || node.trust.proofCapable).length;
 
   return (
     <section id="network-map" className="shell physicalMapSection" aria-label="Physical network map">
@@ -34,7 +35,7 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
         </div>
       </div>
 
-      {markers.length ? (
+      {areas.length ? (
         <div className="physicalMapPanel">
           <div className="mapChrome mapChromeTop">
             <span>Coverage</span>
@@ -58,25 +59,25 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
             pitchWithRotate={false}
           >
             <NavigationControl position="top-right" />
-            {markers.map((marker) => (
+            {areas.map((area) => (
               <Marker
-                key={marker.node.nodeId}
-                longitude={marker.longitude}
-                latitude={marker.latitude}
+                key={area.id}
+                longitude={area.longitude}
+                latitude={area.latitude}
                 anchor="bottom"
                 onClick={(event) => {
                   event.originalEvent.stopPropagation();
-                  setSelected(marker);
+                  setSelected(area);
                 }}
               >
                 <button
                   type="button"
-                  className="mapMarker"
-                  style={{ "--marker-color": STATUS_COLORS[marker.node.overallStatus] } as CSSProperties}
-                  aria-label={`Open ${marker.node.displayName} map details`}
+                  className={`mapMarker${area.clusterCount > 1 ? " mapMarkerClustered" : ""}`}
+                  style={{ "--marker-color": STATUS_COLORS[area.status] } as CSSProperties}
+                  aria-label={`Open ${area.label} provider area details`}
                 >
                   <span className="markerPulse" />
-                  {marker.clusterCount > 1 ? <span className="markerCluster">{marker.clusterCount}</span> : null}
+                  {area.clusterCount > 1 ? <span className="markerCluster">{area.clusterCount}</span> : null}
                 </button>
               </Marker>
             ))}
@@ -92,21 +93,28 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
               >
                 <div className="popupContent">
                   <div className="popupTopline">
-                    <span className={`statusDot statusDot-${selected.node.overallStatus}`} />
-                    <span>{statusLabel(selected.node.overallStatus)}</span>
+                    <span className={`statusDot statusDot-${selected.status}`} />
+                    <span>{selected.clusterCount > 1 ? `${selected.clusterCount} providers` : statusLabel(selected.status)}</span>
                   </div>
-                  <h3>{selected.node.displayName}</h3>
-                  {selected.node.operator ? <p className="popupOperator">Operator: {selected.node.operator}</p> : null}
-                  <p className="popupLocation">{selected.node.location?.displayLocation || selected.label || "Approximate public location"}</p>
-                  <div className="popupChips">
-                    <span>{statusLabel(selected.node.services.commerce.status)} commerce</span>
-                    <span>{statusLabel(selected.node.services.proofs.status)} proofs</span>
-                    <span>{isProvisionableNode(selected.node) ? "Provisionable" : "Not provisionable"}</span>
+                  <h3>{selected.label}</h3>
+                  <p className="popupLocation">Approximate public area. Not an exact node location.</p>
+                  <div className="popupProviderList">
+                    {selected.nodes.map((node) => (
+                      <div className="popupProviderCard" key={node.nodeId}>
+                        <div>
+                          <strong>{node.displayName}</strong>
+                          {node.operator ? <p className="popupOperator">Operator: {node.operator}</p> : null}
+                        </div>
+                        <div className="popupChips">
+                          <span>{statusLabel(node.overallStatus)}</span>
+                          <span>{statusLabel(node.services.commerce.status)} commerce</span>
+                          <span>{statusLabel(node.services.proofs.status)} proofs</span>
+                          <span>{isProvisionableNode(node) ? "Provisionable" : "Not provisionable"}</span>
+                        </div>
+                        <Link href={`/node/${encodeURIComponent(node.nodeId)}`}>Review Provider</Link>
+                      </div>
+                    ))}
                   </div>
-                  <p className="popupSummary">
-                    Identity, content, settlement, and proof signals are available for review before connecting.
-                  </p>
-                  <Link href={`/node/${encodeURIComponent(selected.node.nodeId)}`}>Review Provider</Link>
                 </div>
               </Popup>
             ) : null}

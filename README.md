@@ -100,6 +100,8 @@ location: {
 
 The Network Map does not geolocate visitors or node operators. It does not use IP geolocation, does not infer private location, and does not show exact home locations.
 
+Map markers represent approximate public areas, not exact node locations.
+
 For V1, ContentBox publishes location text only. `network.certifyd.me` resolves approximate display coordinates with a small local lookup table for known public locations:
 
 - Innisfil, Ontario, Canada
@@ -107,7 +109,7 @@ For V1, ContentBox publishes location text only. `network.certifyd.me` resolves 
 - Ontario, Canada
 - Canada
 
-If future public `lat`/`lng` appears in the DTO, the map can use it, but operators should still avoid street-level precision. Multiple nodes that resolve to the same approximate place are offset slightly so each marker remains visible.
+The map intentionally resolves only safe public-area coordinates from declared location text. Multiple nodes that share the same public display area are shown as a single cluster marker with a count, and the popup lists every provider in that area.
 
 ## Apply to Join the Network
 
