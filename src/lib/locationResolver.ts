@@ -5,6 +5,7 @@ export type MappableNode = {
   longitude: number;
   latitude: number;
   label: string;
+  clusterCount: number;
 };
 
 type KnownLocation = {
@@ -24,8 +25,8 @@ const KNOWN_LOCATIONS: Record<string, KnownLocation> = {
 };
 
 export const STATUS_COLORS: Record<NetworkMapStatus, string> = {
-  ready: "#22c55e",
-  limited: "#facc15",
+  ready: "#4ade80",
+  limited: "#f59e0b",
   disabled: "#ef4444",
   offline: "#94a3b8",
   unknown: "#cbd5e1"
@@ -74,24 +75,33 @@ export function resolveNodeLocation(node: NetworkMapNode): KnownLocation | null 
 
 export function mappableNodes(nodes: NetworkMapNode[]): MappableNode[] {
   const samePlaceCount = new Map<string, number>();
-  return nodes
+  const samePlaceTotal = new Map<string, number>();
+  const resolvedNodes = nodes
     .filter(isMapEligibleNode)
     .map((node) => {
       const resolved = resolveNodeLocation(node);
       if (!resolved) return null;
       const placeKey = `${resolved.longitude.toFixed(4)},${resolved.latitude.toFixed(4)}`;
+      samePlaceTotal.set(placeKey, (samePlaceTotal.get(placeKey) || 0) + 1);
+      return { node, resolved, placeKey };
+    })
+    .filter((item): item is { node: NetworkMapNode; resolved: KnownLocation; placeKey: string } => Boolean(item));
+
+  return resolvedNodes
+    .map(({ node, resolved, placeKey }) => {
       const index = samePlaceCount.get(placeKey) || 0;
       samePlaceCount.set(placeKey, index + 1);
-      const offsetRadius = index === 0 ? 0 : 0.045;
+      const clusterCount = samePlaceTotal.get(placeKey) || 1;
+      const offsetRadius = index === 0 ? 0 : Math.min(0.12, 0.036 + clusterCount * 0.006);
       const angle = index * 1.61803398875 * Math.PI;
       return {
         node,
         longitude: resolved.longitude + Math.cos(angle) * offsetRadius,
         latitude: resolved.latitude + Math.sin(angle) * offsetRadius,
-        label: node.location?.displayLocation || [node.location?.city, node.location?.region, node.location?.country].filter(Boolean).join(", ")
+        label: node.location?.displayLocation || [node.location?.city, node.location?.region, node.location?.country].filter(Boolean).join(", "),
+        clusterCount
       };
-    })
-    .filter((item): item is MappableNode => Boolean(item));
+    });
 }
 
 export function initialViewForNodes(nodes: MappableNode[]) {
@@ -99,14 +109,13 @@ export function initialViewForNodes(nodes: MappableNode[]) {
     return { longitude: -96.8, latitude: 55.2, zoom: 2.7 };
   }
   if (nodes.length === 1) {
-    const resolved = resolveNodeLocation(nodes[0].node);
     return {
-      longitude: nodes[0].longitude,
-      latitude: nodes[0].latitude,
-      zoom: resolved?.zoom || 5
+      longitude: nodes[0].longitude - 7,
+      latitude: nodes[0].latitude + 2,
+      zoom: 4.1
     };
   }
   const longitude = nodes.reduce((sum, item) => sum + item.longitude, 0) / nodes.length;
   const latitude = nodes.reduce((sum, item) => sum + item.latitude, 0) / nodes.length;
-  return { longitude, latitude, zoom: 3.8 };
+  return { longitude, latitude, zoom: nodes.length < 6 ? 4.2 : 3.3 };
 }

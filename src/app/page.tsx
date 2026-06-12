@@ -4,9 +4,51 @@ import {
   getNetworkNodes,
   isMapEligibleNode,
   isProvisionableNode,
-  registryBaseUrl,
+  type NetworkMapNode,
   shouldShowIneligibleNodes
 } from "@/lib/network";
+
+function commerceReadyCount(nodes: NetworkMapNode[]): number {
+  return nodes.filter((node) => node.services.commerce.status === "ready" || node.services.commerce.status === "limited").length;
+}
+
+function verifiedOperatorCount(nodes: NetworkMapNode[]): number {
+  return nodes.filter((node) => node.trust.operatorVerified || node.trust.proofCapable).length;
+}
+
+function coverageRegions(nodes: NetworkMapNode[]) {
+  const countries = new Set<string>();
+  const regions = new Set<string>();
+
+  nodes.forEach((node) => {
+    const country = String(node.location?.country || "").trim();
+    const region = String(node.location?.region || "").trim();
+    if (country) countries.add(country);
+    if (country && region) regions.add(`${region}, ${country}`);
+    else if (region) regions.add(region);
+  });
+
+  return { countries, regions };
+}
+
+function coverageCards(nodes: NetworkMapNode[]) {
+  const countryCounts = new Map<string, number>();
+  const regionCounts = new Map<string, number>();
+
+  nodes.forEach((node) => {
+    const country = String(node.location?.country || "").trim();
+    const region = String(node.location?.region || "").trim();
+    if (country) countryCounts.set(country, (countryCounts.get(country) || 0) + 1);
+    if (region) regionCounts.set(region, (regionCounts.get(region) || 0) + 1);
+  });
+
+  const cards = [
+    ...Array.from(countryCounts.entries()).map(([label, count]) => ({ label, count, type: "Country" })),
+    ...Array.from(regionCounts.entries()).map(([label, count]) => ({ label, count, type: "Region" }))
+  ].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+  return cards.length ? cards : [{ label: "Global Network", count: nodes.length, type: "Coverage" }];
+}
 
 export default async function Home({
   searchParams
@@ -17,6 +59,9 @@ export default async function Home({
   const nodes = await getNetworkNodes();
   const showIneligibleNodes = shouldShowIneligibleNodes();
   const visibleNodes = showIneligibleNodes ? nodes : nodes.filter(isMapEligibleNode);
+  const provisionableNodes = visibleNodes.filter(isProvisionableNode);
+  const coverage = coverageRegions(visibleNodes);
+  const regionCards = coverageCards(visibleNodes);
   const q = String(resolvedSearchParams?.q || "").trim().toLowerCase();
   const status = String(resolvedSearchParams?.status || "").trim().toLowerCase();
   const filtered = visibleNodes.filter((node) => {
@@ -33,14 +78,14 @@ export default async function Home({
     <main>
       <section className="hero shell">
         <div className="heroCopy">
-          <p className="eyebrow">Canonical Network Discovery</p>
-          <h1>Discover sovereign Certifyd nodes you can provision from.</h1>
+          <p className="eyebrow">Sovereign Network Discovery</p>
+          <h1>Discover Sovereign Infrastructure</h1>
           <p className="heroText">
-            network.certifyd.me is the public opportunity map for creator onboarding, provider readiness, and sovereign node provisioning.
+            Find trusted providers for identity, content, commerce, settlement, and proofs.
           </p>
           <div className="heroActions">
-            <a className="primaryAction" href="#nodes">Explore providers</a>
-            <span className="heroRule">Online is not the same thing as commerce-capable.</span>
+            <a className="primaryAction" href="#network-map">Explore the network</a>
+            <span className="heroRule">Trust, reachability, and commerce readiness in one view.</span>
           </div>
         </div>
         <div className="heroMapCard" aria-hidden="true">
@@ -50,20 +95,39 @@ export default async function Home({
           <div className="mapLine mapLineA" />
           <div className="mapLine mapLineB" />
           <div className="mapLegend">
-            <span>Provisionable providers</span>
-            <strong>{visibleNodes.filter(isProvisionableNode).length}</strong>
+            <span>Verified provider graph</span>
+            <strong>{provisionableNodes.length}</strong>
           </div>
         </div>
       </section>
 
       <section className="shell summaryGrid" aria-label="Network summary">
-        <div className="summaryCard"><p>Registered nodes</p><span>{nodes.length}</span></div>
-        <div className="summaryCard"><p>Map-eligible</p><span>{visibleNodes.length}</span></div>
-        <div className="summaryCard accent"><p>Provisionable</p><span>{visibleNodes.filter(isProvisionableNode).length}</span></div>
-        <div className="summaryCard source"><p>Genesis Node / initial registry seed</p><span>{registryBaseUrl()}</span></div>
+        <div className="summaryCard"><p>Eligible Providers</p><span>{visibleNodes.length}</span></div>
+        <div className="summaryCard accent"><p>Commerce Ready</p><span>{commerceReadyCount(visibleNodes)}</span></div>
+        <div className="summaryCard"><p>Verified Operators</p><span>{verifiedOperatorCount(visibleNodes)}</span></div>
+        <div className="summaryCard"><p>Countries / Regions Covered</p><span>{coverage.countries.size} / {coverage.regions.size}</span></div>
       </section>
 
       <NetworkMap nodes={visibleNodes} />
+
+      <section className="shell coverageSection" aria-label="Regional coverage">
+        <div className="sectionHeader">
+          <div>
+            <p className="eyebrow">Regional Coverage</p>
+            <h2>Coverage is starting to compound.</h2>
+          </div>
+          <p className="muted">Country, region, trust, coverage, and graph views can layer onto this same registry.</p>
+        </div>
+        <div className="coverageGrid">
+          {regionCards.slice(0, 6).map((card) => (
+            <div className="coverageCard" key={`${card.type}-${card.label}`}>
+              <p>{card.type}</p>
+              <h3>{card.label}</h3>
+              <span>{card.count} {card.count === 1 ? "Provider" : "Providers"}</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="shell controlsPanel">
         <form className="controls" action="/">

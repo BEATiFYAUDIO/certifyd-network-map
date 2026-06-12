@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "deploy:prod": "git push origin main && vercel --prod --yes",
+    "verify:prod": "curl -fsSL https://network.certifyd.me | grep \"Operator-Declared Location Map\"",
+    "ship:prod": "npm run deploy:prod && npm run verify:prod"
   },
   "dependencies": {
     "maplibre-gl": "^5.24.0",
