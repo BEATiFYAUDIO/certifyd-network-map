@@ -20,10 +20,16 @@ type KnownLocation = {
 const KNOWN_LOCATIONS: Record<string, KnownLocation> = {
   "innisfil, ontario, canada": { longitude: -79.6, latitude: 44.3, zoom: 6, label: "Innisfil, Ontario" },
   "innisfil, ontario": { longitude: -79.6, latitude: 44.3, zoom: 6, label: "Innisfil, Ontario" },
+  "innisfil, on, canada": { longitude: -79.6, latitude: 44.3, zoom: 6, label: "Innisfil, Ontario" },
+  "innisfil, on": { longitude: -79.6, latitude: 44.3, zoom: 6, label: "Innisfil, Ontario" },
   "simcoe county, ontario, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
   "simcoe county, ontario": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
+  "simcoe county, on, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
+  "simcoe county, on": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
   "ontario, canada": { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
+  "on, canada": { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
   ontario: { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
+  on: { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
   canada: { longitude: -106.3468, latitude: 56.1304, zoom: 3, label: "Canada" }
 };
 
@@ -40,7 +46,8 @@ export function normalizeLocationKey(value: string): string {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ")
-    .replace(/\s*,\s*/g, ", ");
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/\bon\b/g, "ontario");
 }
 
 export function resolveNodeLocation(node: NetworkMapNode): KnownLocation | null {

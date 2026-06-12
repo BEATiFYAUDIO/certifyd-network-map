@@ -66,9 +66,37 @@ assert.deepEqual(resolved, {
   label: "Innisfil, Ontario"
 });
 
+const abbreviatedInnisfil = node({
+  location: {
+    country: "Canada",
+    region: "ON",
+    displayLocation: "Innisfil, ON",
+    precision: "region",
+    source: "browser_confirmed"
+  }
+});
+
+assert.deepEqual(resolveNodeLocation(abbreviatedInnisfil), {
+  longitude: -79.6,
+  latitude: 44.3,
+  zoom: 6,
+  label: "Innisfil, Ontario"
+});
+
 const areas = mappableAreas([
   node({ nodeId: "node:one", displayName: "Provider One", operator: "Operator One" }),
-  node({ nodeId: "node:two", displayName: "Provider Two", operator: "Operator Two" })
+  node({
+    nodeId: "node:two",
+    displayName: "Provider Two",
+    operator: "Operator Two",
+    location: {
+      country: "Canada",
+      region: "ON",
+      displayLocation: "Innisfil, ON",
+      precision: "region",
+      source: "browser_confirmed"
+    }
+  })
 ]);
 
 assert.equal(areas.length, 1);
