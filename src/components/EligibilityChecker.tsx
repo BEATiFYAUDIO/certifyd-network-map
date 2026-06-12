@@ -108,18 +108,47 @@ function ResultPanel({ node, providerUrl, sourceCount }: { node: NetworkMapNode;
   const mapEligible = isMapEligibleNode(node);
   const provisionable = isProvisionableNode(node);
   const reasons = getNodeEligibilityReasons(node);
+  const providerCanonicalUrl = node.connect.providerCanonicalUrl || providerUrl;
   const statusTitle = provisionable
     ? "Your node is provisionable."
     : mapEligible
       ? "Your node is visible but not fully provisionable yet."
       : "Your node is not map-eligible yet.";
-  const requestHref = `mailto:network@certifyd.me?subject=${encodeURIComponent("Certifyd Network listing request")}&body=${encodeURIComponent(
+  const requestTitle = `Node listing request: ${node.displayName || providerCanonicalUrl}`;
+  const requestBody = [
+    "Please review this node for Certifyd Network listing.",
+    "",
+    `Provider URL: ${providerCanonicalUrl}`,
+    `Provider Node ID: ${node.connect.providerNodeId || ""}`,
+    `Provider Public Key: ${node.connect.providerPublicKey || ""}`,
+    `Provider Profile ID: ${node.connect.providerProfileId || ""}`,
+    `Overall Status: ${node.overallStatus}`,
+    "",
+    "Services:",
+    "```json",
+    JSON.stringify(node.services, null, 2),
+    "```",
+    "",
+    "Readiness:",
+    "```json",
+    JSON.stringify(node.readiness, null, 2),
+    "```",
+    "",
+    "Trust:",
+    "```json",
+    JSON.stringify(node.trust, null, 2),
+    "```",
+    "",
+    `Eligibility result: ${mapEligible ? "eligible" : "not eligible"}`,
+    `Provisionable result: ${provisionable ? "provisionable" : "not provisionable"}`,
+    reasons.length ? `Eligibility notes: ${reasons.join(", ")}` : "Eligibility notes: none"
+  ].join("\n");
+  const requestHref = `https://github.com/BEATiFYAUDIO/certifyd-network-map/issues/new?title=${encodeURIComponent(requestTitle)}&body=${encodeURIComponent(requestBody)}`;
+  const fallbackHref = `mailto:darryl@beatifygroup.com?subject=${encodeURIComponent(requestTitle)}&body=${encodeURIComponent(
     [
-      "Please review this node for Certifyd Network listing:",
+      requestBody,
       "",
-      `Provider URL: ${node.connect.providerCanonicalUrl || providerUrl}`,
-      `Provider Node ID: ${node.connect.providerNodeId || ""}`,
-      `Provider Public Key: ${node.connect.providerPublicKey || ""}`
+      "GitHub issue fallback contact request."
     ].join("\n")
   )}`;
 
@@ -169,12 +198,18 @@ function ResultPanel({ node, providerUrl, sourceCount }: { node: NetworkMapNode;
 
       <div className="heroActions">
         {provisionable ? (
-          <a className="primaryAction" href={requestHref}>Request Listing</a>
+          <a className="primaryAction" href={requestHref} target="_blank" rel="noreferrer">Request Listing on GitHub</a>
         ) : (
           <a className="primaryAction" href="#requirements">Review Requirements</a>
         )}
         <Link className="cardLink" href="/">View Network Map</Link>
       </div>
+      {provisionable ? (
+        <p className="muted">
+          Listing requests are reviewed publicly so creators and operators can see how nodes become discoverable.
+          {" "}If GitHub is unavailable, contact <a href={fallbackHref}>darryl@beatifygroup.com</a>.
+        </p>
+      ) : null}
     </section>
   );
 }
