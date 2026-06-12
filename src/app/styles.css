@@ -294,6 +294,21 @@ button, input, select { font: inherit; }
   color: #d6ffe4;
   background: rgba(11, 58, 38, 0.58);
 }
+.mapModePlaceholder {
+  position: absolute;
+  z-index: 4;
+  left: 18px;
+  bottom: 70px;
+  max-width: min(360px, calc(100% - 36px));
+  border: 1px solid rgba(141, 190, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(2, 7, 12, 0.72);
+  color: #b8cad8;
+  padding: 11px 13px;
+  font-size: 12px;
+  font-weight: 850;
+  backdrop-filter: blur(12px);
+}
 .physicalMapPanel {
   position: relative;
   overflow: hidden;
@@ -484,68 +499,6 @@ button, input, select { font: inherit; }
   max-width: calc(100% - 36px);
 }
 
-.geoFallback {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 58% 42%, rgba(103, 232, 165, 0.12), transparent 18%),
-    radial-gradient(circle at 67% 55%, rgba(245, 158, 11, 0.1), transparent 16%),
-    linear-gradient(90deg, rgba(141, 190, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(rgba(141, 190, 255, 0.045) 1px, transparent 1px);
-  background-size: auto, auto, 64px 64px, 64px 64px;
-}
-.geoFallback svg {
-  width: 100%;
-  height: 100%;
-  opacity: 0.82;
-}
-.geoLand {
-  fill: rgba(22, 54, 70, 0.52);
-  stroke: rgba(155, 207, 255, 0.48);
-  stroke-width: 1.5;
-}
-.geoCanada { fill: rgba(22, 70, 67, 0.42); }
-.geoUs { fill: rgba(35, 54, 72, 0.44); }
-.geoWater {
-  fill: rgba(2, 9, 15, 0.78);
-  stroke: rgba(140, 231, 255, 0.34);
-  stroke-width: 1.1;
-}
-.geoLine {
-  fill: none;
-  stroke: rgba(180, 214, 244, 0.18);
-  stroke-width: 1;
-  stroke-dasharray: 5 8;
-}
-.geoCity {
-  fill: rgba(140, 231, 255, 0.86);
-  filter: drop-shadow(0 0 10px rgba(140, 231, 255, 0.8));
-}
-.geoProviderHalo {
-  fill: rgba(245, 158, 11, 0.16);
-  stroke: rgba(245, 158, 11, 0.24);
-  stroke-width: 2;
-  filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.62));
-}
-.geoProvider {
-  stroke: rgba(255, 255, 255, 0.92);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.75));
-}
-.geoProviderLimited { fill: var(--amber); }
-.geoFallback text {
-  fill: rgba(219, 237, 250, 0.5);
-  font-size: 22px;
-  font-weight: 950;
-  letter-spacing: 0.18em;
-}
-.geoFallback .geoCityLabel {
-  fill: rgba(226, 241, 250, 0.72);
-  font-size: 14px;
-  letter-spacing: 0.04em;
-}
 .mapLegendOverlay span {
   display: inline-flex;
   align-items: center;
@@ -924,5 +877,6 @@ button, input, select { font: inherit; }
   .physicalMapPanel { min-height: 460px; border-radius: 26px; }
   .mapChromeTop { left: 12px; top: 12px; }
   .mapModeRail { left: 12px; right: 12px; bottom: 12px; }
+  .mapModePlaceholder { left: 12px; right: 12px; bottom: 70px; max-width: none; }
   .mapLegendOverlay { right: 12px; bottom: 88px; justify-content: flex-start; }
 }
