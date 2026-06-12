@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./styles.css";
 
 export const metadata: Metadata = {

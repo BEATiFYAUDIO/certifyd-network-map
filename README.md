@@ -24,7 +24,7 @@ It is not "the network."
 `network.certifyd.me` is the canonical Certifyd Network discovery surface. It is:
 
 - the public discovery layer
-- a map-ready directory of eligible sovereign nodes
+- an interactive physical map and directory of eligible sovereign nodes
 - a creator onboarding and provisioning directory
 - a consumer of registry data
 
@@ -82,6 +82,32 @@ Non-eligible nodes are hidden by default. For local debugging, set:
 ```bash
 NEXT_PUBLIC_SHOW_INELIGIBLE_NODES=true
 ```
+
+## Physical Map Location
+
+The homepage map uses operator-declared approximate public location metadata from ContentBox:
+
+```ts
+location: {
+  country?: string;
+  region?: string;
+  city?: string;
+  displayLocation?: string;
+  precision?: "country" | "region" | "city";
+  source?: "operator_declared" | "browser_confirmed";
+}
+```
+
+The Network Map does not geolocate visitors or node operators. It does not use IP geolocation, does not infer private location, and does not show exact home locations.
+
+For V1, ContentBox publishes location text only. `network.certifyd.me` resolves approximate display coordinates with a small local lookup table for known public locations:
+
+- Innisfil, Ontario, Canada
+- Simcoe County, Ontario, Canada
+- Ontario, Canada
+- Canada
+
+If future public `lat`/`lng` appears in the DTO, the map can use it, but operators should still avoid street-level precision. Multiple nodes that resolve to the same approximate place are offset slightly so each marker remains visible.
 
 ## Apply to Join the Network
 
@@ -150,6 +176,7 @@ The site displays only public-safe provider data:
 - Provider Profile ID
 - service/readiness/trust status
 - public-safe reason codes
+- operator-declared approximate public location
 
 It must never display or request:
 
@@ -164,4 +191,7 @@ It must never display or request:
 - REST endpoints
 - local ports
 - payout destinations
+- exact addresses
+- exact private coordinates
+- IP-derived location
 - private infrastructure details

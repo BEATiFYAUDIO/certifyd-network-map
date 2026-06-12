@@ -1,4 +1,5 @@
 import { NodeCard } from "@/components/NodeCard";
+import { NetworkMap } from "@/components/NetworkMap";
 import {
   getNetworkNodes,
   isMapEligibleNode,
@@ -61,6 +62,8 @@ export default async function Home({
         <div className="summaryCard accent"><p>Provisionable</p><span>{visibleNodes.filter(isProvisionableNode).length}</span></div>
         <div className="summaryCard source"><p>Genesis Node / initial registry seed</p><span>{registryBaseUrl()}</span></div>
       </section>
+
+      <NetworkMap nodes={visibleNodes} />
 
       <section className="shell controlsPanel">
         <form className="controls" action="/">

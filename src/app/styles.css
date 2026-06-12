@@ -204,6 +204,93 @@ button, input, select { font: inherit; }
 }
 .controls input:focus, .controls select:focus { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(140, 231, 255, 0.1); }
 
+.physicalMapSection { margin: 18px auto 18px; }
+.mapSectionHeader {
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+.mapSectionHeader h2 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+.physicalMapPanel {
+  position: relative;
+  overflow: hidden;
+  height: min(68vh, 620px);
+  min-height: 430px;
+  border: 1px solid var(--line-strong);
+  border-radius: 32px;
+  background: rgba(4, 11, 20, 0.94);
+  box-shadow: var(--shadow), inset 0 1px rgba(255,255,255,0.08);
+}
+.physicalMapPanel .maplibregl-map {
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+}
+.physicalMapPanel .maplibregl-ctrl-group {
+  overflow: hidden;
+  border: 1px solid rgba(141, 190, 255, 0.18);
+  border-radius: 12px;
+  background: rgba(3, 9, 16, 0.8);
+}
+.physicalMapPanel .maplibregl-ctrl button {
+  background-color: rgba(3, 9, 16, 0.75);
+}
+.mapMarker {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255,255,255,0.92);
+  border-radius: 999px;
+  background: var(--marker-color);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--marker-color) 22%, transparent), 0 10px 26px rgba(0,0,0,0.45);
+  cursor: pointer;
+}
+.mapMarker:hover {
+  transform: translateY(-1px) scale(1.08);
+}
+.nodePopup .maplibregl-popup-content {
+  border: 1px solid rgba(141, 190, 255, 0.22);
+  border-radius: 18px;
+  background: rgba(3, 9, 16, 0.96);
+  color: var(--text);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.5);
+  padding: 14px;
+}
+.nodePopup .maplibregl-popup-tip {
+  border-top-color: rgba(3, 9, 16, 0.96);
+  border-bottom-color: rgba(3, 9, 16, 0.96);
+}
+.nodePopup .maplibregl-popup-close-button {
+  color: var(--muted);
+  font-size: 20px;
+  padding: 4px 8px;
+}
+.popupContent {
+  display: grid;
+  gap: 6px;
+  min-width: 220px;
+  max-width: 280px;
+}
+.popupContent h3 {
+  margin: 0 24px 2px 0;
+  font-size: 18px;
+  line-height: 1.1;
+}
+.popupContent p {
+  margin: 0;
+  color: #c9daea;
+  font-size: 13px;
+}
+.popupContent a {
+  margin-top: 6px;
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: 950;
+}
+
 .primaryAction, .cardLink, .copyButton {
   border: 1px solid rgba(255, 177, 74, 0.62);
   border-radius: 999px;
@@ -240,6 +327,8 @@ button, input, select { font: inherit; }
 .mapKey i { width: 11px; height: 11px; border-radius: 999px; box-shadow: 0 0 22px currentColor; }
 .keyReady { color: var(--green); background: var(--green); }
 .keyLimited { color: var(--orange); background: var(--orange); }
+.keyDisabled { color: var(--red); background: var(--red); }
+.keyOffline { color: #94a3b8; background: #94a3b8; }
 .keyProof { color: var(--cyan); background: var(--cyan); }
 .nodeList { display: grid; gap: 16px; }
 

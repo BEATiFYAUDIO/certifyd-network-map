@@ -13,8 +13,12 @@ export type NetworkMapNode = {
   operator?: string;
   roles: Array<"creator" | "identity" | "content" | "commerce" | "settlement" | "proof">;
   location?: {
-    region?: string;
     country?: string;
+    region?: string;
+    city?: string;
+    displayLocation?: string;
+    precision?: "country" | "region" | "city";
+    source?: "operator_declared" | "browser_confirmed";
     lat?: number;
     lng?: number;
   };
@@ -83,6 +87,14 @@ const STATIC_NETWORK_NODES: NetworkMapNode[] = [
     displayName: "Certifyd Creator Profile",
     operator: "Certifyd",
     roles: ["creator", "identity", "content", "commerce", "settlement", "proof"],
+    location: {
+      country: "Canada",
+      region: "Ontario",
+      city: "Innisfil",
+      displayLocation: "Innisfil, Ontario",
+      precision: "city",
+      source: "operator_declared"
+    },
     overallStatus: "limited",
     services: {
       identity: { status: "ready" },
