@@ -75,6 +75,7 @@ type NodeResponse = {
 };
 
 const DEFAULT_REGISTRY_URL = "https://certifyd.beatifygroup.com";
+const DEBUG_INELIGIBLE_NODES = "true";
 
 export function registryBaseUrl(): string {
   return String(process.env.NEXT_PUBLIC_NETWORK_REGISTRY_URL || DEFAULT_REGISTRY_URL).replace(/\/$/, "");
@@ -99,6 +100,71 @@ export async function getNetworkNodes(): Promise<NetworkMapNode[]> {
 export async function getNetworkNode(nodeId: string): Promise<NetworkMapNode> {
   const data = await registryFetch<NodeResponse>(`/api/network/nodes/${encodeURIComponent(nodeId)}`);
   return data.node;
+}
+
+function hasValue(value: unknown): boolean {
+  return typeof value === "string" ? value.trim().length > 0 : Boolean(value);
+}
+
+function isEnabledStatus(status?: NetworkMapStatus): boolean {
+  return status !== "disabled" && status !== "offline";
+}
+
+function isReadyOrLimited(status?: NetworkMapStatus): boolean {
+  return status === "ready" || status === "limited";
+}
+
+function hasProviderConnection(node: NetworkMapNode): boolean {
+  return Boolean(
+    hasValue(node.nodeId) &&
+    hasValue(node.connect?.providerNodeId) &&
+    hasValue(node.connect?.providerPublicKey) &&
+    hasValue(node.connect?.providerCanonicalUrl)
+  );
+}
+
+export function isMapEligibleNode(node: NetworkMapNode): boolean {
+  return Boolean(
+    hasProviderConnection(node) &&
+    isEnabledStatus(node.services?.identity?.status) &&
+    isReadyOrLimited(node.readiness?.reachable?.status)
+  );
+}
+
+export function isProvisionableNode(node: NetworkMapNode): boolean {
+  const capabilities = node.connect?.capabilities;
+  const hasCapability = capabilities ? Object.values(capabilities).some(Boolean) : false;
+
+  return Boolean(
+    isMapEligibleNode(node) &&
+    isReadyOrLimited(node.readiness?.provisioned?.status) &&
+    hasCapability &&
+    hasValue(node.connect?.providerCanonicalUrl)
+  );
+}
+
+export function getNodeEligibilityReasons(node: NetworkMapNode): string[] {
+  const reasons: string[] = [];
+
+  if (!hasValue(node.nodeId)) reasons.push("Missing node ID");
+  if (!hasValue(node.connect?.providerNodeId)) reasons.push("Missing provider node ID");
+  if (!hasValue(node.connect?.providerPublicKey)) reasons.push("Missing provider public key");
+  if (!hasValue(node.connect?.providerCanonicalUrl)) reasons.push("Missing provider canonical URL");
+  if (!isEnabledStatus(node.services?.identity?.status)) reasons.push("Identity service is disabled or offline");
+  if (!isReadyOrLimited(node.readiness?.reachable?.status)) reasons.push("Node is not reachable");
+
+  if (isMapEligibleNode(node)) {
+    const capabilities = node.connect?.capabilities;
+    const hasCapability = capabilities ? Object.values(capabilities).some(Boolean) : false;
+    if (!isReadyOrLimited(node.readiness?.provisioned?.status)) reasons.push("Provisioning is not ready or limited");
+    if (!hasCapability) reasons.push("No provider capabilities are enabled");
+  }
+
+  return reasons;
+}
+
+export function shouldShowIneligibleNodes(): boolean {
+  return String(process.env.NEXT_PUBLIC_SHOW_INELIGIBLE_NODES || "").toLowerCase() === DEBUG_INELIGIBLE_NODES;
 }
 
 export function contentboxNetworkSettingsUrl(): string {

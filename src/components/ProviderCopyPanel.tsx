@@ -50,12 +50,12 @@ export function ProviderCopyPanel({ node, settingsUrl }: { node: NetworkMapNode;
       <div className="sectionHeader">
         <div>
           <p className="eyebrow">Provider Connection</p>
-          <h2>Connect to this Provider</h2>
+          <h2>Copy provider details</h2>
         </div>
         <CopyButton label="Copy Provider Details" value={details} />
       </div>
       <p className="muted panelIntro">
-        Paste these values into ContentBox Network Settings to connect your creator profile to this sovereign provider.
+        Copy provider details and paste them into ContentBox Network Settings to connect your creator profile to this sovereign provider.
         ContentBox will verify the provider identity.
       </p>
       <div className="copyGrid">

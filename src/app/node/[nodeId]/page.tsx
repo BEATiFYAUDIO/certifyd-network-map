@@ -33,17 +33,21 @@ export default async function NodeDetail({ params }: { params: Promise<{ nodeId:
 
       <section className="detailHero panel">
         <div>
-          <p className="eyebrow">Sovereign Provider</p>
+          <p className="eyebrow">Sovereign Provider Detail</p>
           <h1>{node.displayName}</h1>
           {node.operator ? <p className="muted">Operator: {node.operator}</p> : null}
           <div className="roleList">{node.roles.map((role) => <span key={role}>{role}</span>)}</div>
         </div>
-        <StatusBadge status={node.overallStatus} />
+        <div className="detailStatusStack">
+          <StatusBadge status={node.overallStatus} />
+          {typeof node.trust.trustScore === "number" ? <span>Trust Score {node.trust.trustScore}</span> : null}
+          {node.trust.proofCapable ? <span>Proof capable</span> : null}
+        </div>
       </section>
 
       <section className="detailGrid">
         <div className="panel">
-          <p className="eyebrow">Services</p>
+          <p className="eyebrow">Service Capability</p>
           <MetricRow label="Identity" metric={node.services.identity} />
           <MetricRow label="Content" metric={node.services.content} />
           <MetricRow label="Commerce" metric={node.services.commerce} />
@@ -51,7 +55,7 @@ export default async function NodeDetail({ params }: { params: Promise<{ nodeId:
           <MetricRow label="Proofs" metric={node.services.proofs} />
         </div>
         <div className="panel">
-          <p className="eyebrow">Readiness</p>
+          <p className="eyebrow">Provisioning Readiness</p>
           <MetricRow label="Provisioned" metric={node.readiness.provisioned} />
           <MetricRow label="Durable" metric={node.readiness.durable} />
           <MetricRow label="Reachable" metric={node.readiness.reachable} />

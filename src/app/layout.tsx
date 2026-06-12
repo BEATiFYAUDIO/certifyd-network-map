@@ -5,7 +5,7 @@ import "./styles.css";
 
 export const metadata: Metadata = {
   title: "Certifyd Network Map",
-  description: "Discover sovereign Certifyd node providers and review readiness, trust, and service capability.",
+  description: "Discover eligible sovereign Certifyd nodes and review readiness, trust, and service capability.",
   icons: [{ rel: "icon", url: "/favicon.svg" }]
 };
 

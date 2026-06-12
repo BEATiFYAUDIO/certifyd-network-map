@@ -4,8 +4,8 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
   return (
     <main className="shell">
       <section className="panel errorPanel">
-        <p className="eyebrow">Registry unavailable</p>
-        <h1>Could not load the Certifyd Network.</h1>
+        <p className="eyebrow">Initial registry seed unavailable</p>
+        <h1>Could not load eligible Certifyd nodes.</h1>
         <p>{error.message}</p>
         <button className="copyButton" type="button" onClick={reset}>Try again</button>
       </section>
