@@ -1,4 +1,4 @@
-import { isMapEligibleNode, type NetworkMapNode, type NetworkMapStatus } from "@/lib/network";
+import { isMapEligibleNode, isProvisionableNode, type NetworkMapNode, type NetworkMapStatus } from "./network";
 
 export type MappableArea = {
   id: string;
@@ -18,8 +18,8 @@ type KnownLocation = {
 };
 
 const KNOWN_LOCATIONS: Record<string, KnownLocation> = {
-  "innisfil, ontario, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Innisfil area, Ontario" },
-  "innisfil, ontario": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Innisfil area, Ontario" },
+  "innisfil, ontario, canada": { longitude: -79.6, latitude: 44.3, zoom: 6, label: "Innisfil, Ontario" },
+  "innisfil, ontario": { longitude: -79.6, latitude: 44.3, zoom: 6, label: "Innisfil, Ontario" },
   "simcoe county, ontario, canada": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
   "simcoe county, ontario": { longitude: -79.8661, latitude: 44.5834, zoom: 6, label: "Simcoe County, Ontario" },
   "ontario, canada": { longitude: -85.3232, latitude: 50.0007, zoom: 4, label: "Ontario, Canada" },
@@ -35,7 +35,7 @@ export const STATUS_COLORS: Record<NetworkMapStatus, string> = {
   unknown: "#cbd5e1"
 };
 
-function normalizeLocationKey(value: string): string {
+export function normalizeLocationKey(value: string): string {
   return value
     .trim()
     .toLowerCase()
@@ -64,11 +64,17 @@ export function resolveNodeLocation(node: NetworkMapNode): KnownLocation | null 
   return null;
 }
 
+function publicAreaKey(node: NetworkMapNode): string {
+  const location = node.location;
+  return normalizeLocationKey(
+    location?.displayLocation ||
+      [location?.city, location?.region, location?.country].filter(Boolean).join(", ")
+  );
+}
+
 function publicLocationLabel(node: NetworkMapNode, resolved: KnownLocation): string {
   const location = node.location;
   const declaredLabel = location?.displayLocation || [location?.city, location?.region, location?.country].filter(Boolean).join(", ");
-  const normalized = normalizeLocationKey(declaredLabel);
-  if (normalized.includes("innisfil")) return "Innisfil area, Ontario";
   return resolved.label || declaredLabel || "Approximate public area";
 }
 
@@ -94,7 +100,7 @@ export function mappableAreas(nodes: NetworkMapNode[]): MappableArea[] {
     if (!resolved) continue;
 
     const label = publicLocationLabel(node, resolved);
-    const id = normalizeLocationKey(label);
+    const id = publicAreaKey(node);
     const existing = areas.get(id);
 
     if (existing) {
@@ -116,6 +122,22 @@ export function mappableAreas(nodes: NetworkMapNode[]): MappableArea[] {
   }
 
   return Array.from(areas.values());
+}
+
+export function areaProviderCountLabel(area: MappableArea): string {
+  return `${area.clusterCount} sovereign provider${area.clusterCount === 1 ? "" : "s"}`;
+}
+
+export function areaProviderSummaries(area: MappableArea) {
+  return area.nodes.map((node) => ({
+    nodeId: node.nodeId,
+    displayName: node.displayName,
+    operator: node.operator,
+    overallStatus: node.overallStatus,
+    commerceStatus: node.services.commerce.status,
+    proofsStatus: node.services.proofs.status,
+    provisionable: isProvisionableNode(node)
+  }));
 }
 
 export function initialViewForAreas(areas: MappableArea[]) {

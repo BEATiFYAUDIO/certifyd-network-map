@@ -477,6 +477,10 @@ button, input, select { font: inherit; }
   color: #eef8ff !important;
   font-weight: 900;
 }
+.popupAreaCount {
+  color: #9fb3c5 !important;
+  font-weight: 900;
+}
 .popupProviderList {
   display: grid;
   gap: 10px;

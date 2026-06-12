@@ -4,8 +4,8 @@ import Link from "next/link";
 import Map, { Marker, NavigationControl, Popup } from "react-map-gl/maplibre";
 import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
-import { initialViewForAreas, mappableAreas, STATUS_COLORS, type MappableArea } from "@/lib/locationResolver";
-import { isProvisionableNode, statusLabel, type NetworkMapNode } from "@/lib/network";
+import { areaProviderCountLabel, areaProviderSummaries, initialViewForAreas, mappableAreas, STATUS_COLORS, type MappableArea } from "@/lib/locationResolver";
+import { statusLabel, type NetworkMapNode } from "@/lib/network";
 
 const DARK_BASEMAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
@@ -97,21 +97,22 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
                     <span>{selected.clusterCount > 1 ? `${selected.clusterCount} providers` : statusLabel(selected.status)}</span>
                   </div>
                   <h3>{selected.label}</h3>
+                  <p className="popupAreaCount">{areaProviderCountLabel(selected)}</p>
                   <p className="popupLocation">Approximate public area. Not an exact node location.</p>
                   <div className="popupProviderList">
-                    {selected.nodes.map((node) => (
-                      <div className="popupProviderCard" key={node.nodeId}>
+                    {areaProviderSummaries(selected).map((provider) => (
+                      <div className="popupProviderCard" key={provider.nodeId}>
                         <div>
-                          <strong>{node.displayName}</strong>
-                          {node.operator ? <p className="popupOperator">Operator: {node.operator}</p> : null}
+                          <strong>{provider.displayName}</strong>
+                          {provider.operator ? <p className="popupOperator">Operator: {provider.operator}</p> : null}
                         </div>
                         <div className="popupChips">
-                          <span>{statusLabel(node.overallStatus)}</span>
-                          <span>{statusLabel(node.services.commerce.status)} commerce</span>
-                          <span>{statusLabel(node.services.proofs.status)} proofs</span>
-                          <span>{isProvisionableNode(node) ? "Provisionable" : "Not provisionable"}</span>
+                          <span>{statusLabel(provider.overallStatus)}</span>
+                          <span>{statusLabel(provider.commerceStatus)} commerce</span>
+                          <span>{statusLabel(provider.proofsStatus)} proofs</span>
+                          <span>{provider.provisionable ? "Provisionable" : "Not provisionable"}</span>
                         </div>
-                        <Link href={`/node/${encodeURIComponent(node.nodeId)}`}>Review Provider</Link>
+                        <Link href={`/node/${encodeURIComponent(provider.nodeId)}`}>Review Provider</Link>
                       </div>
                     ))}
                   </div>

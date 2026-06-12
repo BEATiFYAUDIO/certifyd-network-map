@@ -100,7 +100,7 @@ location: {
 
 The Network Map does not geolocate visitors or node operators. It does not use IP geolocation, does not infer private location, and does not show exact home locations.
 
-Map markers represent approximate public areas, not exact node locations.
+Markers represent approximate public areas. Multiple nodes in the same area are grouped together. Markers do not represent exact node addresses.
 
 For V1, ContentBox publishes location text only. `network.certifyd.me` resolves approximate display coordinates with a small local lookup table for known public locations:
 
