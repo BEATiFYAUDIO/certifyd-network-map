@@ -399,7 +399,18 @@ button, input, select { font: inherit; }
   from { transform: scale(0.58); opacity: 0.84; }
   to { transform: scale(1.22); opacity: 0; }
 }
-.nodePopup .maplibregl-popup-content {
+.mapDetailsDrawer {
+  position: absolute;
+  z-index: 6;
+  top: 18px;
+  right: 18px;
+  bottom: 18px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  width: min(420px, calc(100% - 36px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid rgba(141, 190, 255, 0.28);
   border-radius: 24px;
   background:
@@ -409,15 +420,6 @@ button, input, select { font: inherit; }
   box-shadow: 0 28px 90px rgba(0,0,0,0.62);
   padding: 18px;
   backdrop-filter: blur(14px);
-}
-.nodePopup .maplibregl-popup-tip {
-  border-top-color: rgba(3, 9, 16, 0.96);
-  border-bottom-color: rgba(3, 9, 16, 0.96);
-}
-.nodePopup .maplibregl-popup-close-button {
-  color: var(--muted);
-  font-size: 20px;
-  padding: 4px 8px;
 }
 .popupContent {
   display: grid;
@@ -502,10 +504,7 @@ button, input, select { font: inherit; }
   font-size: 16px;
   letter-spacing: -0.02em;
 }
-.mobileMapSheet {
-  display: none;
-}
-.mobileSheetClose {
+.mapDetailsClose {
   justify-self: end;
   border: 1px solid rgba(141, 190, 255, 0.24);
   border-radius: 999px;
@@ -929,7 +928,6 @@ button, input, select { font: inherit; }
   .mapModeRail span { text-align: center; padding: 8px 6px; font-size: 11px; }
   .mapModePlaceholder { left: 12px; right: 12px; bottom: 62px; max-width: none; }
   .mapLegendOverlay { right: 12px; bottom: 88px; justify-content: flex-start; }
-  .physicalMapPanel.hasSelectedArea .nodePopup { display: none; }
   .physicalMapPanel.hasSelectedArea .mapLegendOverlay,
   .physicalMapPanel.hasSelectedArea .mapModePlaceholder {
     display: none;
@@ -939,40 +937,29 @@ button, input, select { font: inherit; }
     top: 82px;
     opacity: 0.84;
   }
-  .mobileMapSheet {
-    position: absolute;
-    z-index: 6;
+  .mapDetailsDrawer {
+    top: auto;
     left: 10px;
     right: 10px;
     bottom: 10px;
-    display: grid;
-    gap: 10px;
+    width: auto;
     max-height: min(58%, 430px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    border: 1px solid rgba(141, 190, 255, 0.28);
-    border-radius: 24px;
-    background:
-      radial-gradient(circle at 18% 0%, rgba(103, 232, 165, 0.12), transparent 38%),
-      rgba(3, 9, 16, 0.98);
-    color: var(--text);
     box-shadow: 0 -18px 70px rgba(0,0,0,0.68);
     padding: 12px;
-    backdrop-filter: blur(16px);
   }
-  .mobileMapSheet .popupContent {
+  .mapDetailsDrawer .popupContent {
     min-width: 0;
     max-width: none;
   }
-  .mobileMapSheet .popupContent h3 {
+  .mapDetailsDrawer .popupContent h3 {
     margin-right: 0;
     font-size: 24px;
   }
-  .mobileMapSheet .popupProviderList {
+  .mapDetailsDrawer .popupProviderList {
     max-height: none;
     overflow: visible;
   }
-  .mobileMapSheet .popupContent a {
+  .mapDetailsDrawer .popupContent a {
     width: 100%;
     min-height: 44px;
     display: inline-flex;

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Map, { Marker, NavigationControl, Popup } from "react-map-gl/maplibre";
+import Map, { Marker, NavigationControl } from "react-map-gl/maplibre";
 import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 import { areaProviderCountLabel, areaProviderSummaries, initialViewForAreas, mappableAreas, STATUS_COLORS, type MappableArea } from "@/lib/locationResolver";
@@ -112,19 +112,6 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
                 </button>
               </Marker>
             ))}
-            {selected ? (
-              <Popup
-                longitude={selected.longitude}
-                latitude={selected.latitude}
-                anchor="top"
-                closeButton
-                closeOnClick={false}
-                onClose={() => setSelected(null)}
-                className="nodePopup"
-              >
-                <ProviderAreaContent area={selected} />
-              </Popup>
-            ) : null}
           </Map>
           <div className="mapLegendOverlay">
             <span><i className="keyReady" /> Ready</span>
@@ -133,8 +120,8 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
             <span><i className="keyOffline" /> Offline</span>
           </div>
           {selected ? (
-            <div className="mobileMapSheet" role="dialog" aria-modal="false" aria-label={`${selected.label} providers`}>
-              <button type="button" className="mobileSheetClose" onClick={() => setSelected(null)} aria-label="Close provider details">
+            <div className="mapDetailsDrawer" role="dialog" aria-modal="false" aria-label={`${selected.label} providers`}>
+              <button type="button" className="mapDetailsClose" onClick={() => setSelected(null)} aria-label="Close provider details">
                 Close
               </button>
               <ProviderAreaContent area={selected} />
