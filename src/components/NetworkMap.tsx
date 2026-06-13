@@ -32,7 +32,7 @@ function ProviderAreaContent({ area }: { area: MappableArea }) {
               <span>{statusLabel(provider.proofsStatus)} proofs</span>
               <span>{provider.provisionable ? "Provisionable" : "Not provisionable"}</span>
             </div>
-            <Link href={`/node/${encodeURIComponent(provider.nodeId)}`}>Review Provider</Link>
+            <Link href={`/node/${encodeURIComponent(provider.nodeId)}`}>Review Operator</Link>
           </div>
         ))}
       </div>
@@ -53,14 +53,14 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
     <section id="network-map" className="shell physicalMapSection" aria-label="Physical network map">
       <div className="sectionHeader mapSectionHeader">
         <div>
-          <p className="eyebrow">Live Coverage Layer</p>
-          <h2>Where trusted infrastructure is forming.</h2>
+          <p className="eyebrow">Network Map</p>
+          <h2>Explore active operators supporting creator commerce across the network.</h2>
           <p className="muted">
-            Operator-declared approximate locations only. No IP geolocation, no street addresses, no private coordinates.
+            View coverage, readiness, and availability. Operator-declared approximate locations only.
           </p>
         </div>
         <div className="mapStats">
-          <span><strong>{mappedProviders}</strong> mapped</span>
+          <span><strong>{mappedProviders}</strong> operators mapped</span>
           <span><strong>{commerceReady}</strong> commerce-ready</span>
           <span><strong>{verifiedOperators}</strong> verified</span>
         </div>
@@ -130,7 +130,7 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
         </div>
       ) : (
         <div className="panel emptyState">
-          Eligible nodes will appear here once operators publish public location metadata.
+          Operators will appear here once they publish public location metadata.
         </div>
       )}
     </section>

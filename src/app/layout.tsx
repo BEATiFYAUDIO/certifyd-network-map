@@ -6,7 +6,7 @@ import "./styles.css";
 
 export const metadata: Metadata = {
   title: "Certifyd Network Map",
-  description: "Discover eligible sovereign Certifyd nodes and review readiness, trust, and service capability.",
+  description: "Explore independent operators supporting creator commerce across the Sovereign Network.",
   icons: [{ rel: "icon", url: "/favicon.svg" }]
 };
 
@@ -20,8 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span>Certifyd Network</span>
           </Link>
           <nav aria-label="Primary navigation">
-            <Link href="/">Map</Link>
-            <Link href="/join">Join Network</Link>
+            <Link href="/">Network Map</Link>
+            <Link href="/join">Become a Node Operator</Link>
           </nav>
         </header>
         {children}

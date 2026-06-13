@@ -1,22 +1,20 @@
 import Link from "next/link";
 import { EligibilityChecker } from "@/components/EligibilityChecker";
 
-const flowSteps = ["Run Node", "Meet Requirements", "Submit Node", "Eligibility Check", "Become Discoverable"];
+const flowSteps = ["Run Node", "Provide Commerce", "Publish Availability", "Check Readiness", "Support Creators"];
 
 const checklist = [
-  "Identity service",
-  "Content service",
   "Commerce service",
   "Settlement service",
-  "Proof service",
-  "Reachable public route",
+  "Network availability",
   "Provider public key",
-  "Canonical provider URL"
+  "Canonical provider URL",
+  "Reachable public route"
 ];
 
 export const metadata = {
-  title: "Apply to Join the Certifyd Network",
-  description: "Check whether a sovereign Certifyd node is eligible and provisionable on the public Network Map."
+  title: "Become a Node Operator",
+  description: "Support creators by running commerce infrastructure for the Sovereign Network."
 };
 
 export default function JoinPage() {
@@ -24,11 +22,11 @@ export default function JoinPage() {
     <main>
       <section className="hero joinHero shell">
         <div className="heroCopy">
-          <p className="eyebrow">Operator Admission</p>
-          <h1>Apply to Join the Certifyd Network</h1>
+          <p className="eyebrow">Join The Network</p>
+          <h1>Become a Node Operator</h1>
           <p className="heroText">
-            Run a sovereign node, prove your capabilities, and become discoverable to creators looking for trusted identity,
-            content, commerce, settlement, and proof services.
+            We&apos;re early. The network is small. The opportunity is significant. If you want to help creators build
+            independent businesses, we&apos;d love to talk.
           </p>
           <div className="heroActions">
             <a className="primaryAction" href="#eligibility-checker">Check Node Eligibility</a>
@@ -47,27 +45,31 @@ export default function JoinPage() {
 
       <section className="shell joinIntro">
         <div className="panel joinStatement">
-          <p className="eyebrow">Open Participation</p>
-          <h2>Anyone can run a sovereign Certifyd node.</h2>
+          <p className="eyebrow">What Is A Node Operator?</p>
+          <h2>A node operator provides commerce services to creators.</h2>
           <p>
-            Public map placement is not automatic. Nodes must publish valid public identity, reachable metadata, and provider
-            capability signals before creators can rely on them for provisioning.
+            When a creator sells something through the network, node operators help make that transaction possible. Think
+            of it as supporting creator-owned commerce rather than platform-owned commerce.
           </p>
         </div>
         <div className="panel joinStatement">
-          <p className="eyebrow">Conditional Discoverability</p>
-          <h2>Eligibility protects creator trust.</h2>
+          <p className="eyebrow">The Mission</p>
+          <h2>Creators deserve better infrastructure.</h2>
           <p>
-            The Network Map filters incomplete, unreachable, or non-provisionable nodes. This is not gatekeeping; it is public
-            discoverability based on capability.
+            Most creator platforms extract value from creators. We&apos;re building infrastructure that helps creators earn,
+            sell, and grow independently by supporting them.
           </p>
         </div>
       </section>
 
       <section className="shell checklistBand" aria-label="Capability checklist">
         <div>
-          <p className="eyebrow">Capability Checklist</p>
-          <h2>Provisionable providers expose creator-safe services and connection fields.</h2>
+          <p className="eyebrow">What Operators Provide Today</p>
+          <h2>Commerce, settlement, and network availability.</h2>
+          <p className="muted">
+            The network starts with commerce because creators can&apos;t build sustainable businesses if they don&apos;t
+            control how they get paid.
+          </p>
         </div>
         <div className="capabilityGrid">
           {checklist.map((item) => (
