@@ -502,6 +502,19 @@ button, input, select { font: inherit; }
   font-size: 16px;
   letter-spacing: -0.02em;
 }
+.mobileMapSheet {
+  display: none;
+}
+.mobileSheetClose {
+  justify-self: end;
+  border: 1px solid rgba(141, 190, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: #d9e9f7;
+  padding: 10px 13px;
+  font-size: 13px;
+  font-weight: 950;
+}
 .popupChips {
   display: flex;
   flex-wrap: wrap;
@@ -906,7 +919,64 @@ button, input, select { font: inherit; }
   .summaryCard.source span { font-size: 14px; }
   .physicalMapPanel { min-height: 460px; border-radius: 26px; }
   .mapChromeTop { left: 12px; top: 12px; }
-  .mapModeRail { left: 12px; right: 12px; bottom: 12px; }
-  .mapModePlaceholder { left: 12px; right: 12px; bottom: 70px; max-width: none; }
+  .mapModeRail {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .mapModeRail span { text-align: center; padding: 8px 6px; font-size: 11px; }
+  .mapModePlaceholder { left: 12px; right: 12px; bottom: 62px; max-width: none; }
   .mapLegendOverlay { right: 12px; bottom: 88px; justify-content: flex-start; }
+  .physicalMapPanel.hasSelectedArea .nodePopup { display: none; }
+  .physicalMapPanel.hasSelectedArea .mapLegendOverlay,
+  .physicalMapPanel.hasSelectedArea .mapModePlaceholder {
+    display: none;
+  }
+  .physicalMapPanel.hasSelectedArea .mapModeRail {
+    bottom: auto;
+    top: 82px;
+    opacity: 0.84;
+  }
+  .mobileMapSheet {
+    position: absolute;
+    z-index: 6;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    display: grid;
+    gap: 10px;
+    max-height: min(58%, 430px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid rgba(141, 190, 255, 0.28);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(103, 232, 165, 0.12), transparent 38%),
+      rgba(3, 9, 16, 0.98);
+    color: var(--text);
+    box-shadow: 0 -18px 70px rgba(0,0,0,0.68);
+    padding: 12px;
+    backdrop-filter: blur(16px);
+  }
+  .mobileMapSheet .popupContent {
+    min-width: 0;
+    max-width: none;
+  }
+  .mobileMapSheet .popupContent h3 {
+    margin-right: 0;
+    font-size: 24px;
+  }
+  .mobileMapSheet .popupProviderList {
+    max-height: none;
+    overflow: visible;
+  }
+  .mobileMapSheet .popupContent a {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

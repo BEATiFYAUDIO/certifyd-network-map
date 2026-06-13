@@ -9,6 +9,37 @@ import { statusLabel, type NetworkMapNode } from "@/lib/network";
 
 const DARK_BASEMAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
+function ProviderAreaContent({ area }: { area: MappableArea }) {
+  return (
+    <div className="popupContent">
+      <div className="popupTopline">
+        <span className={`statusDot statusDot-${area.status}`} />
+        <span>{area.clusterCount > 1 ? `${area.clusterCount} providers` : statusLabel(area.status)}</span>
+      </div>
+      <h3>{area.label}</h3>
+      <p className="popupAreaCount">{areaProviderCountLabel(area)}</p>
+      <p className="popupLocation">Approximate public area. Not an exact node location.</p>
+      <div className="popupProviderList">
+        {areaProviderSummaries(area).map((provider) => (
+          <div className="popupProviderCard" key={provider.nodeId}>
+            <div>
+              <strong>{provider.displayName}</strong>
+              {provider.operator ? <p className="popupOperator">Operator: {provider.operator}</p> : null}
+            </div>
+            <div className="popupChips">
+              <span>{statusLabel(provider.overallStatus)}</span>
+              <span>{statusLabel(provider.commerceStatus)} commerce</span>
+              <span>{statusLabel(provider.proofsStatus)} proofs</span>
+              <span>{provider.provisionable ? "Provisionable" : "Not provisionable"}</span>
+            </div>
+            <Link href={`/node/${encodeURIComponent(provider.nodeId)}`}>Review Provider</Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
   const areas = useMemo(() => mappableAreas(nodes), [nodes]);
   const initialViewState = useMemo(() => initialViewForAreas(areas), [areas]);
@@ -36,7 +67,7 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
       </div>
 
       {areas.length ? (
-        <div className="physicalMapPanel">
+        <div className={`physicalMapPanel${selected ? " hasSelectedArea" : ""}`}>
           <div className="mapChrome mapChromeTop">
             <span>Coverage</span>
             <strong>North America</strong>
@@ -91,32 +122,7 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
                 onClose={() => setSelected(null)}
                 className="nodePopup"
               >
-                <div className="popupContent">
-                  <div className="popupTopline">
-                    <span className={`statusDot statusDot-${selected.status}`} />
-                    <span>{selected.clusterCount > 1 ? `${selected.clusterCount} providers` : statusLabel(selected.status)}</span>
-                  </div>
-                  <h3>{selected.label}</h3>
-                  <p className="popupAreaCount">{areaProviderCountLabel(selected)}</p>
-                  <p className="popupLocation">Approximate public area. Not an exact node location.</p>
-                  <div className="popupProviderList">
-                    {areaProviderSummaries(selected).map((provider) => (
-                      <div className="popupProviderCard" key={provider.nodeId}>
-                        <div>
-                          <strong>{provider.displayName}</strong>
-                          {provider.operator ? <p className="popupOperator">Operator: {provider.operator}</p> : null}
-                        </div>
-                        <div className="popupChips">
-                          <span>{statusLabel(provider.overallStatus)}</span>
-                          <span>{statusLabel(provider.commerceStatus)} commerce</span>
-                          <span>{statusLabel(provider.proofsStatus)} proofs</span>
-                          <span>{provider.provisionable ? "Provisionable" : "Not provisionable"}</span>
-                        </div>
-                        <Link href={`/node/${encodeURIComponent(provider.nodeId)}`}>Review Provider</Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <ProviderAreaContent area={selected} />
               </Popup>
             ) : null}
           </Map>
@@ -126,6 +132,14 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
             <span><i className="keyDisabled" /> Disabled</span>
             <span><i className="keyOffline" /> Offline</span>
           </div>
+          {selected ? (
+            <div className="mobileMapSheet" role="dialog" aria-modal="false" aria-label={`${selected.label} providers`}>
+              <button type="button" className="mobileSheetClose" onClick={() => setSelected(null)} aria-label="Close provider details">
+                Close
+              </button>
+              <ProviderAreaContent area={selected} />
+            </div>
+          ) : null}
         </div>
       ) : (
         <div className="panel emptyState">
