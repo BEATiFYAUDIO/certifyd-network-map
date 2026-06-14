@@ -54,9 +54,9 @@ export function NetworkMap({ nodes }: { nodes: NetworkMapNode[] }) {
       <div className="sectionHeader mapSectionHeader">
         <div>
           <p className="eyebrow">Network Map</p>
-          <h2>Explore active operators supporting creator commerce across the network.</h2>
+          <h2>Explore active operators supporting creator commerce.</h2>
           <p className="muted">
-            View coverage, readiness, and availability. Operator-declared approximate locations only.
+            View network coverage, readiness, and availability.
           </p>
         </div>
         <div className="mapStats">
