@@ -105,26 +105,34 @@ export default async function Home({
         </div>
       </section>
 
-      <section className="shell coverageSection" aria-label="Who we need">
-        <div className="sectionHeader">
+      <section className="shell coverageSection operatorAudienceSection" aria-label="Who we need">
+        <div className="sectionHeader compactHeader">
           <div>
             <p className="eyebrow">Who We Need</p>
-            <h2>Builders. Entrepreneurs. Bitcoiners. Technologists. Music industry operators.</h2>
+            <h2>Operators who can move creator commerce forward.</h2>
           </div>
           <p className="muted">People who believe creators deserve better options.</p>
+        </div>
+        <div className="audiencePillGrid" aria-label="Operator types">
+          <span>Builders</span>
+          <span>Entrepreneurs</span>
+          <span>Bitcoiners</span>
+          <span>Technologists</span>
+          <span>Music industry operators</span>
         </div>
       </section>
 
       <section className="shell coverageSection" aria-label="The mission">
-        <div className="sectionHeader">
+        <div className="missionPanel">
           <div>
             <p className="eyebrow">The Mission</p>
-            <h2>Most creator platforms extract value from creators. We&apos;re trying to do the opposite.</h2>
+            <h2>Less extraction. More shared upside.</h2>
           </div>
-          <p className="muted">
-            Creators earn from their work. Operators earn by supporting creator commerce. Together they create a stronger,
-            more independent ecosystem.
-          </p>
+          <div className="missionCopy">
+            <p>Most creator platforms extract value from creators. We&apos;re trying to do the opposite.</p>
+            <p>Creators earn from their work. Operators earn by supporting creator commerce.</p>
+            <p>Together they create a stronger, more independent ecosystem.</p>
+          </div>
         </div>
       </section>
 
